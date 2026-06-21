@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANGSATU - Live Bola & Skor</title>
+    <title>MANGSATU - Live Bola & Jadwal</title>
     <style>
         /* STYLE UTAMA */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
@@ -37,17 +37,23 @@
         .server-btn.active { background-color: #38bdf8; color: #0b0f19; border-color: #38bdf8; }
         .server-btn:hover:not(.active) { background-color: #374151; color: #fff; }
 
-        /* SECTION LIVE SCORE */
-        .score-section { margin-top: 40px; background-color: #111827; padding: 15px; border-radius: 10px; border: 1px solid #1f2937; }
-        .score-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #38bdf8; border-left: 4px solid #38bdf8; padding-left: 10px; }
+        /* SECTION JADWAL PERTANDINGAN */
+        .jadwal-section { margin-top: 40px; background-color: #111827; padding: 20px; border-radius: 10px; border: 1px solid #1f2937; }
+        .jadwal-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #38bdf8; border-left: 4px solid #38bdf8; padding-left: 10px; }
         
-        .score-wrapper {
-            width: 100%;
-            height: 650px;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #1a233a;
-        }
+        /* TABEL RESPONSIF */
+        .tabel-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 500px; }
+        th { background-color: #1f2937; color: #9ca3af; padding: 12px; font-size: 14px; text-transform: uppercase; }
+        td { padding: 15px 12px; border-bottom: 1px solid #1f2937; font-size: 15px; vertical-align: middle; }
+        tr:hover { background-color: #151f32; }
+
+        /* BADGE STATUS */
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .badge-live { background-color: #ef4444; color: #fff; animation: blink 1.5s infinite; }
+        .badge-nanti { background-color: #374151; color: #9ca3af; }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -57,28 +63,67 @@
     </header>
 
     <main class="container">
-        <div class="match-title">🔴 LIVE STREAMING: Server Utama</div>
+        <!-- AREA STREAMING -->
+        <div class="match-title" id="current-match">🔴 SEDANG BERLANGSUNG: Siaran Ulang Pertandingan</div>
         
         <div class="video-wrapper">
-            <iframe id="main-player" src="https://www.youtube.com/embed/live_stream?channel=UCqBRNKY3-X9T6HwB0n6Z_jA" allowfullscreen></iframe>
+            <!-- Link Utama YouTube Embed -->
+            <iframe id="main-player" src="https://www.youtube.com/embed/Osm5PsdaYNY" allowfullscreen></iframe>
         </div>
 
+        <!-- TOMBOL PILIHAN SERVER -->
         <div class="server-container">
-            <button class="server-btn active" onclick="gantiServer('https://www.youtube.com/embed/live_stream?channel=UCqBRNKY3-X9T6HwB0n6Z_jA', this)">Server 1</button>
-            <button class="server-btn" onclick="gantiServer('https://www.youtube.com/embed/dQw4w9WgXcQ', this)">Server 2 (Cadangan)</button>
+            <button class="server-btn active" onclick="gantiServer('https://www.youtube.com/embed/Osm5PsdaYNY', '🔴 SEDANG BERLANGSUNG: Siaran Ulang Pertandingan', this)">Server 1</button>
+            <button class="server-btn" onclick="gantiServer('https://www.youtube.com/embed/dQw4w9WgXcQ', '🔴 STREAM CADANGAN: Rick Astley Show', this)">Server 2 (Backup)</button>
         </div>
 
-        <section class="score-section">
-            <div class="score-title">Live Score & Jadwal Pertandingan Hari Ini</div>
-            <div class="score-wrapper">
-                <iframe src="https://www.livescore.cz/widget/" width="100%" height="100%" frameborder="0" scrolling="yes"></iframe>
+        <!-- AREA JADWAL BOLA LOKAL -->
+        <section class="jadwal-section">
+            <div class="jadwal-title">Jadwal Pertandingan Hari Ini</div>
+            
+            <div class="tabel-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Jam</th>
+                            <th>Liga</th>
+                            <th>Pertandingan</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Baris Pertandingan 1 -->
+                        <tr>
+                            <td>19:30 WITA</td>
+                            <td style="color: #38bdf8;">Friendly Match</td>
+                            <td><strong>Siaran Ulang</strong> Pertandingan</td>
+                            <td><span class="badge badge-live">LIVE</span></td>
+                        </tr>
+                        <!-- Baris Pertandingan 2 -->
+                        <tr>
+                            <td>22:00 WITA</td>
+                            <td style="color: #38bdf8;">Premier League</td>
+                            <td>Manchester City vs Liverpool</td>
+                            <td><span class="badge badge-nanti">Belum Mulai</span></td>
+                        </tr>
+                        <!-- Baris Pertandingan 3 -->
+                        <tr>
+                            <td>02:00 WITA</td>
+                            <td style="color: #fbbf24;">La Liga</td>
+                            <td>Real Madrid vs Atletico Madrid</td>
+                            <td><span class="badge badge-nanti">Belum Mulai</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
     </main>
 
     <script>
-        function gantiServer(url, btn) {
+        // Fungsi ganti server video + ubah judul teks di atas player
+        function gantiServer(url, title, btn) {
             document.getElementById('main-player').src = url;
+            document.getElementById('current-match').innerText = title;
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
