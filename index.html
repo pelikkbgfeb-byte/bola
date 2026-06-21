@@ -64,16 +64,16 @@
 
     <main class="container">
         <!-- AREA STREAMING -->
-        <div class="match-title" id="current-match">🔴 SEDANG BERLANGSUNG: Siaran Ulang Pertandingan</div>
+        <div class="match-title" id="current-match">🔴 SEDANG BERLANGSUNG: Live Match Streaming</div>
         
         <div class="video-wrapper">
-            <!-- Link Utama YouTube Embed -->
-            <iframe id="main-player" src="https://www.youtube.com/embed/Osm5PsdaYNY" allowfullscreen></iframe>
+            <!-- Link Embed Live Terbaru -->
+            <iframe id="main-player" src="https://www.youtube.com/embed/a8RWX5CRrI0" allowfullscreen></iframe>
         </div>
 
         <!-- TOMBOL PILIHAN SERVER -->
         <div class="server-container">
-            <button class="server-btn active" onclick="gantiServer('https://www.youtube.com/embed/Osm5PsdaYNY', '🔴 SEDANG BERLANGSUNG: Siaran Ulang Pertandingan', this)">Server 1</button>
+            <button class="server-btn active" onclick="gantiServer('https://www.youtube.com/embed/a8RWX5CRrI0', '🔴 SEDANG BERLANGSUNG: Live Match Streaming', this)">Server 1</button>
             <button class="server-btn" onclick="gantiServer('https://www.youtube.com/embed/dQw4w9WgXcQ', '🔴 STREAM CADANGAN: Rick Astley Show', this)">Server 2 (Backup)</button>
         </div>
 
@@ -92,26 +92,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Baris Pertandingan 1 -->
                         <tr>
-                            <td>19:30 WITA</td>
-                            <td style="color: #38bdf8;">Friendly Match</td>
-                            <td><strong>Siaran Ulang</strong> Pertandingan</td>
+                            <td>20:30 WITA</td>
+                            <td style="color: #38bdf8;">Live Match</td>
+                            <td><strong>Pertandingan</strong> Pilihan Hari Ini</td>
                             <td><span class="badge badge-live">LIVE</span></td>
-                        </tr>
-                        <!-- Baris Pertandingan 2 -->
-                        <tr>
-                            <td>22:00 WITA</td>
-                            <td style="color: #38bdf8;">Premier League</td>
-                            <td>Manchester City vs Liverpool</td>
-                            <td><span class="badge badge-nanti">Belum Mulai</span></td>
-                        </tr>
-                        <!-- Baris Pertandingan 3 -->
-                        <tr>
-                            <td>02:00 WITA</td>
-                            <td style="color: #fbbf24;">La Liga</td>
-                            <td>Real Madrid vs Atletico Madrid</td>
-                            <td><span class="badge badge-nanti">Belum Mulai</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -120,7 +105,6 @@
     </main>
 
     <script>
-        // Fungsi ganti server video + ubah judul teks di atas player
         function gantiServer(url, title, btn) {
             document.getElementById('main-player').src = url;
             document.getElementById('current-match').innerText = title;
