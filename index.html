@@ -37,15 +37,16 @@
         .server-btn.active { background-color: #38bdf8; color: #0b0f19; border-color: #38bdf8; }
         .server-btn:hover:not(.active) { background-color: #374151; color: #fff; }
 
-        /* SECTION LIVE SCORE & JADWAL AUTOMATIS */
+        /* SECTION LIVE SCORE */
         .score-section { margin-top: 40px; background-color: #111827; padding: 15px; border-radius: 10px; border: 1px solid #1f2937; }
         .score-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #38bdf8; border-left: 4px solid #38bdf8; padding-left: 10px; }
         
         .score-wrapper {
             width: 100%;
-            height: 600px;
+            height: 650px;
             border-radius: 8px;
             overflow: hidden;
+            background-color: #1a233a;
         }
     </style>
 </head>
@@ -70,13 +71,12 @@
         <section class="score-section">
             <div class="score-title">Live Score & Jadwal Pertandingan Hari Ini</div>
             <div class="score-wrapper">
-                <iframe src="https://www.livescore.im/" width="100%" height="100%" frameborder="0" allowtransparency="true"></iframe>
+                <iframe src="https://www.livescore.cz/widget/" width="100%" height="100%" frameborder="0" scrolling="yes"></iframe>
             </div>
         </section>
     </main>
 
     <script>
-        // Fungsi ganti server video
         function gantiServer(url, btn) {
             document.getElementById('main-player').src = url;
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
