@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANUXSTREAM - Live Bola Otomatis</title>
+    <style>
+        /* STYLE UTAMA */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #0b0f19; color: #fff; padding-bottom: 50px; }
+        
+        header { background-color: #111827; padding: 20px; text-align: center; border-bottom: 2px solid #38bdf8; }
+        header h1 { color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; }
+
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+
+        .match-title { font-size: 20px; margin-bottom: 15px; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        
+        /* PLAYER VIDEO */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            background-color: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        /* SECTION JADWAL & STREAM LIST */
+        .jadwal-section { margin-top: 40px; background-color: #111827; padding: 20px; border-radius: 10px; border: 1px solid #1f2937; }
+        .jadwal-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #38bdf8; border-left: 4px solid #38bdf8; padding-left: 10px; }
+        
+        /* TABEL RESPONSIF */
+        .tabel-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 500px; }
+        th { background-color: #1f2937; color: #9ca3af; padding: 12px; font-size: 14px; text-transform: uppercase; }
+        td { padding: 15px 12px; border-bottom: 1px solid #1f2937; font-size: 15px; vertical-align: middle; }
+        tr:hover { background-color: #151f32; }
+
+        /* BADGE STATUS */
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; border: none; cursor: pointer;}
+        .badge-live { background-color: #ef4444; color: #fff; animation: blink 1.5s infinite; }
+        
+        .loading { text-align: center; color: #9ca3af; padding: 20px; }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MANGSATU</h1>
+    </header>
+
+    <main class="container">
+        <!-- AREA STREAMING PLAYER -->
+        <div class="match-title" id="current-title">🔴 Mengambil link pertandingan otomatis...</div>
+        
+        <div class="video-wrapper">
+            <iframe id="main-player" src="about:blank" allowfullscreen></iframe>
+        </div>
+
+        <!-- AREA JADWAL & PILIHAN LIVE MATCH DARI API -->
+        <section class="jadwal-section">
+            <div class="jadwal-title">Pertandingan Live / Terbaru Hari Ini</div>
+            
+            <div class="tabel-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kompetisi</th>
+                            <th>Pertandingan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="api-match-list">
+                        <tr>
+                            <td colspan="3" class="loading">Mengambil data pertandingan terbaru...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Fungsi utama meload data pertandingan
+        async function loadLiveMatches() {
+            const tbody = document.getElementById('api-match-list');
+            
+            // Opsi 1: Coba ambil dari ScoreBat API langsung
+            try {
+                const response = await fetch('https://www.scorebat.com/video-api/v3/feed/');
+                if (!response.ok) throw new Error("Gagal direct");
+                const data = await response.json();
+                renderScoreBat(data.response.slice(0, 10));
+            } catch (error) {
+                console.log("Gagal opsi 1, mencoba opsi 2 (Backup API)...");
+                // Opsi 2: Jika diblokir CORS/Emulator, pakai data backup event olahraga dari TheSportsDB
+                try {
+                    const responseBackup = await fetch('https://www.thesportsdb.com/api/v1/json/3/latestelevated.php?l=4328');
+                    const dataBackup = await responseBackup.json();
+                    renderBackup(dataBackup.events);
+                } catch (errBackup) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="loading" style="color: #ef4444;">Koneksi diblokir oleh editor. Coba buka lewat browser biasa atau jalankan via hosting.</td></tr>';
+                }
+            }
+        }
+
+        // Tampilkan data jika menggunakan ScoreBat API
+        function renderScoreBat(matches) {
+            const tbody = document.getElementById('api-match-list');
+            tbody.innerHTML = '';
+
+            matches.forEach(match => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = match.videos[0].embed;
+                const iframeSrc = tempDiv.querySelector('iframe').src;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color: #38bdf8;">${match.competition}</td>
+                    <td><strong>${match.title}</strong></td>
+                    <td><button class="badge badge-live" onclick="putarVideo('${iframeSrc}', '${match.title}')">TONTON</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if(matches.length > 0) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = matches[0].videos[0].embed;
+                putarVideo(tempDiv.querySelector('iframe').src, matches[0].title);
+            }
+        }
+
+        // Tampilkan data jika beralih ke API Cadangan
+        function renderBackup(events) {
+            const tbody = document.getElementById('api-match-list');
+            tbody.innerHTML = '';
+
+            if(!events) {
+                tbody.innerHTML = '<tr><td colspan="3" class="loading">Tidak ada jadwal live saat ini.</td></tr>';
+                return;
+            }
+
+            events.forEach(event => {
+                // Menggunakan placeholder stream legal youtube olahraga sebagai cadangan player
+                const mockStream = "https://www.youtube.com/embed/live_stream?channel=UCqBRNKY3-X9T6HwB0n6Z_jA";
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color: #38bdf8;">Sepak Bola Internasional</td>
+                    <td><strong>${event.strEvent}</strong></td>
+                    <td><button class="badge badge-live" onclick="putarVideo('${mockStream}', '${event.strEvent}')">TONTON</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if(events.length > 0) {
+                putarVideo("https://www.youtube.com/embed/live_stream?channel=UCqBRNKY3-X9T6HwB0n6Z_jA", events[0].strEvent);
+            }
+        }
+
+        // Fungsi mengarahkan video ke player utama
+        function putarVideo(url, title) {
+            document.getElementById('main-player').src = url;
+            document.getElementById('current-title').innerText = "🔴 SEDANG BERLANGSUNG: " + title;
+        }
+
+        // Jalankan saat web dibuka
+        window.onload = loadLiveMatches;
+    </script>
+</body>
+</html>
